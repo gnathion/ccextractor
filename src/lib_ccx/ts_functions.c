@@ -270,10 +270,7 @@ int ts_readpacket(struct ccx_demuxer* ctx, struct ts_payload *payload)
 	// seem to happen when there's packet loss when processing a network
 	// stream. 
 	FILE *savepacket;
-	pid_t mypid=getpid();
-	char spfn[1024];
-	sprintf (spfn,"/tmp/packets_%u.ts",(unsigned) mypid);
-	savepacket=fopen (spfn, "ab");
+	savepacket=fopen (ccx_options.ts_debug_outut_filename, "ab");
 	if (savepacket)
 	{
 		fwrite (tspacket,188,1,savepacket);

@@ -321,20 +321,21 @@ void print_usage (void)
 	mprint ("\n");
 	mprint ("To see This Help Message: -h or --help\n\n");
 	mprint ("File name related options:\n");
-	mprint ("            inputfile: file(s) to process\n");
-	mprint ("    -o outputfilename: Use -o parameters to define output filename if you don't\n");
-	mprint ("                       like the default ones (same as infile plus _1 or _2 when\n");
-	mprint ("                       needed and file extension, e.g. .srt).\n");
-	mprint ("         -cf filename: Write 'clean' data to a file. Cleans means the ES\n");
-	mprint ("                       without TS or PES headers.\n");
-	mprint ("              -stdout: Write output to stdout (console) instead of file. If\n");
-	mprint ("                       stdout is used, then -o, -o1 and -o2 can't be used. Also\n");
-	mprint ("                       -stdout will redirect all messages to stderr (error).\n");
-	mprint ("           -pesheader: Dump the PES Header to stdout (console). This is\n");
-	mprint ("                       used for debugging purposes to see the contents\n");
-	mprint ("                       of each PES packet header.\n");
-	mprint ("         -debugdvbsub: Write the DVB subtitle debug traces to console.\n");
-	mprint ("      -ignoreptsjumps: Ignore PTS jumps (default).\n");
+	mprint ("                   inputfile: file(s) to process\n");
+	mprint ("           -o outputfilename: Use -o parameters to define output filename if you don't\n");
+	mprint ("                              like the default ones (same as infile plus _1 or _2 when\n");
+	mprint ("                              needed and file extension, e.g. .srt).\n");
+	mprint ("                -cf filename: Write 'clean' data to a file. Cleans means the ES\n");
+	mprint ("                              without TS or PES headers.\n");
+	mprint ("                     -stdout: Write output to stdout (console) instead of file. If\n");
+	mprint ("                              stdout is used, then -o, -o1 and -o2 can't be used. Also\n");
+	mprint ("                              -stdout will redirect all messages to stderr (error).\n");
+	mprint ("                  -pesheader: Dump the PES Header to stdout (console). This is\n");
+	mprint ("                              used for debugging purposes to see the contents\n");
+	mprint ("                              of each PES packet header.\n");
+	mprint ("                -debugdvbsub: Write the DVB subtitle debug traces to console.\n");
+	mprint ("             -ignoreptsjumps: Ignore PTS jumps (default).\n");
+	mprint ("-ts_packets_to_file filename: Output file path to write processed bytes of ts packets \n");
 	mprint ("         -fixptsjumps: fix pts jumps. Use this parameter if you\n");
 	mprint ("                       experience timeline resets/jumps in the output.\n");
 	mprint ("               -stdin: Reads input from stdin (console) instead of file.\n");
@@ -2379,6 +2380,14 @@ int parse_parameters (struct ccx_s_options *opt, int argc, char *argv[])
 			i++;
 			continue;
 		}
+
+
+		if (strcmp(argv[i], "-ts_packets_to_file") == 0 && i<argc-1)
+		{
+			opt->ts_debug_outut_filename = argv[i+1];
+			i++;
+			continue;
+		}
 #ifdef WITH_LIBCURL
 		if (strcmp (argv[i],"-curlposturl")==0 && i<argc-1)
 		{
@@ -2518,6 +2527,13 @@ int parse_parameters (struct ccx_s_options *opt, int argc, char *argv[])
 	{
 		mprint("Note: Output format is WebVTT, forcing UTF-8");
 		opt->enc_cfg.encoding = CCX_ENC_UTF_8;
+	}
+
+	if (opt->write_format==CCX_OF_RCWT && opt->ts_debug_outut_filename == NULL)
+	{
+		print_error(opt->gui_mode_reports,
+			   "CCExtractor expects a filepath when -ts_packets_to_file is mentioned\n");
+		return EXIT_INCOMPATIBLE_PARAMETERS;
 	}
 #ifdef WITH_LIBCURL
 	if (opt->write_format==CCX_OF_CURL && opt->curlposturl==NULL)

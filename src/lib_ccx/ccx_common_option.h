@@ -185,6 +185,7 @@ struct ccx_s_options // Options from user parameters
 	int multiprogram;
 	int out_interval;
 	int segment_on_key_frames_only;
+	char *ts_debug_outut_filename;						// Write processed bytes to the specified file
 #ifdef WITH_LIBCURL
 	char *curlposturl;
 #endif
